@@ -97,6 +97,11 @@ func ComputeSI(input float64) (float64, string) {
 // e.g. SI(1000000, "B") -> 1 MB
 // e.g. SI(2.2345e-12, "F") -> 2.2345 pF
 func SI(input float64, unit string) string {
+	// Handle special case where unit is a percent
+	// Should return .05 % instead of 50 m%
+	if unit == "%" {
+		return Ftoa(input) + " " + unit
+	}
 	value, prefix := ComputeSI(input)
 	return Ftoa(value) + " " + prefix + unit
 }
