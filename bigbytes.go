@@ -1,5 +1,4 @@
-package humanize
-
+package humanize 
 import (
 	"fmt"
 	"math/big"
