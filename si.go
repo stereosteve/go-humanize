@@ -3,6 +3,7 @@ package humanize
 import (
 	"errors"
 	"math"
+	"math/big"
 	"regexp"
 	"strconv"
 )
@@ -133,4 +134,27 @@ func ParseSI(input string) (float64, string, error) {
 
 	base, err := strconv.ParseFloat(found[1], 64)
 	return base * mag, unit, err
+}
+
+
+// ParseBigSI is similar to ParseSI but returns a big.Float instead of float.
+// helpful in avoiding floating point precision issues.
+func ParseBigSI(input string) (*big.Float, string, error) {
+	found := riParseRegex.FindStringSubmatch(input)
+
+	if len(found) != 4 {
+		return nil, "", errInvalid
+	}
+
+	val, _, err := new(big.Float).Parse(found[1], 10)
+	if err != nil {
+		return nil, "", err
+	}
+
+	mag := big.NewFloat(revSIPrefixTable[found[2]])
+	unit := found[3]
+
+	val.Mul(val, mag)
+
+	return val, unit, nil
 }

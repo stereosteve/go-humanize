@@ -135,6 +135,38 @@ func TestParseSI(t *testing.T) {
 			t.Errorf("On %v expected %v got %v", test.input, test.unit, gotu)
 		}
 	}
+
+}
+
+func TestParseBigSI(t *testing.T) {
+	tests := []struct {
+		input    string
+		expected string
+		unit     string
+		hasError bool
+	}{
+		{"2.2 pF", "2.2e-12", "F", false},
+		{"3.3 pF", "3.3e-12", "F", false},
+		{"3.33 fF", "3.33e-15", "F", false},
+		{"3.333333 fF", "3.333333e-15", "F", false},
+		{"-6.8e-3 kW", "-6.8", "W", false},
+	}
+	for _, test := range tests {
+		val, unit, err := ParseBigSI(test.input)
+		if test.hasError && err == nil {
+			t.Errorf("Expected error on %s, got %v %v", test.input, val, unit)
+		}
+		if !test.hasError && err != nil {
+			t.Errorf("Expected no error on %s, got error %v", test.input, err)
+		}
+		if val.String() != test.expected {
+			t.Errorf("On %v expected %v, got %v", test.input, test.expected, val.String())
+		}
+		if unit != test.unit {
+			t.Errorf("On %v expected %v got %v", test.input, test.unit, unit)
+		}
+	}
+
 }
 
 func TestSIWithDigits(t *testing.T) {
